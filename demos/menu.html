@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taco Shop QR Menu Demo | Oscar Talamantes</title>
+<script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-[#fff8f0] text-zinc-900">
+<div class="max-w-md mx-auto min-h-screen bg-white md:rounded-3xl md:my-6 md:shadow-xl overflow-hidden border">
+  <div class="p-5 bg-black text-white flex justify-between items-center"><h1 class="font-bold text-lg">El Jefe Tacos 🌮 — QR Menu</h1><span class="text-xs bg-white/20 px-2 py-1 rounded-full">Demo</span></div>
+  <div class="p-4 grid grid-cols-3 gap-2 text-xs"><button data-filter="all" class="filterBtn bg-black text-white rounded-full py-2">All</button><button data-filter="tacos" class="filterBtn bg-zinc-100 rounded-full py-2">Tacos</button><button data-filter="drinks" class="filterBtn bg-zinc-100 rounded-full py-2">Drinks</button></div>
+  <div id="menu" class="p-4 space-y-3"></div>
+  <div class="sticky bottom-0 bg-white border-t p-4">
+    <div id="cart" class="text-sm mb-3">Cart empty</div>
+    <button id="order" class="w-full bg-blue-600 text-white rounded-full py-3 font-semibold">Order via WhatsApp — $<span id="total">0.00</span></button>
+    <div class="mt-2 text-[11px] text-zinc-500">Stack: Responsive HTML/CSS/JS, filter + cart logic, WhatsApp deep link. Mobile-first, loads in <1s.</div>
+  </div>
+</div>
+<script>
+const items=[{id:1,name:"Al Pastor Taco",price:3.5,cat:"tacos"},{id:2,name:"Carne Asada Taco",price:4,cat:"tacos"},{id:3,name:"Veggie Taco",price:3,cat:"tacos"},{id:4,name:"Horchata",price:2.5,cat:"drinks"},{id:5,name:"Mexican Coke",price:2,cat:"drinks"}];
+let cart={}, filter='all';
+const menu=document.getElementById('menu'), cartEl=document.getElementById('cart'), totalEl=document.getElementById('total');
+function render(){menu.innerHTML='';items.filter(i=>filter==='all'||i.cat===filter).forEach(i=>{const d=document.createElement('div');d.className='flex justify-between items-center border rounded-2xl p-3';d.innerHTML=`<div><div class='font-medium text-sm'>${i.name}</div><div class='text-xs text-zinc-500'>$${i.price.toFixed(2)}</div></div><button class='bg-black text-white rounded-full px-3 py-1 text-xs' onclick='add(${i.id})'>Add</button>`;menu.appendChild(d);});}
+function add(id){cart[id]=(cart[id]||0)+1;updateCart();}
+function updateCart(){let total=0, lines=[];Object.entries(cart).forEach(([id,qty])=>{const it=items.find(x=>x.id==id);total+=it.price*qty;lines.push(`${it.name} x${qty}`);});totalEl.textContent=total.toFixed(2);cartEl.textContent=lines.length?lines.join(' • ')+' — '+Object.values(cart).reduce((a,b)=>a+b,0)+' items':'Cart empty';}
+document.querySelectorAll('.filterBtn').forEach(b=>b.addEventListener('click',e=>{filter=e.target.dataset.filter;document.querySelectorAll('.filterBtn').forEach(x=>{x.className='filterBtn bg-zinc-100 rounded-full py-2'});e.target.className='filterBtn bg-black text-white rounded-full py-2';render();}));
+document.getElementById('order').addEventListener('click',()=>{if(!Object.keys(cart).length){alert('Add something first');return;}const total=totalEl.textContent;const msg=encodeURIComponent(`Hi! I'd like to order: ${cartEl.textContent} Total $${total} - from QR menu demo`);window.open(`https://wa.me/18015551234?text=${msg}`,'_blank');});
+render();
+</script>
+</body></html>
